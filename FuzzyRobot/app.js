@@ -70,7 +70,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getEastFuzzy = getEastFuzzy;
 
     function getNorthEastFuzzy(angle) {
         var AscInfLimit = 0;
@@ -80,7 +79,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getNorthEastFuzzy = getNorthEastFuzzy;
 
     function getNorthFuzzy(angle) {
         var AscInfLimit = 45;
@@ -90,7 +88,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getNorthFuzzy = getNorthFuzzy;
 
     function getNorthWestFuzzy(angle) {
         var AscInfLimit = 90;
@@ -100,7 +97,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getNorthWestFuzzy = getNorthWestFuzzy;
 
     function getWestFuzzy(angle) {
         var AscInfLimit = 135;
@@ -110,7 +106,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getWestFuzzy = getWestFuzzy;
 
     function getSouthWestFuzzy(angle) {
         var AscInfLimit = 180;
@@ -120,7 +115,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getSouthWestFuzzy = getSouthWestFuzzy;
 
     function getSouthFuzzy(angle) {
         var AscInfLimit = 225;
@@ -130,7 +124,6 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getSouthFuzzy = getSouthFuzzy;
 
     function getSouthEastFuzzy(angle) {
         var AscInfLimit = 270;
@@ -140,7 +133,66 @@ var FuzzyHelperLib;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
-    FuzzyHelperLib.getSouthEastFuzzy = getSouthEastFuzzy;
+
+    function getPositionOffset(angle, distance) {
+        if (getNorthEastFuzzy(angle) >= 0.5) {
+            var result = {
+                x: distance,
+                y: -distance
+            };
+            return result;
+        }
+        if (getNorthWestFuzzy(angle) >= 0.5) {
+            var result = {
+                x: -distance,
+                y: -distance
+            };
+            return result;
+        }
+        if (getSouthEastFuzzy(angle) >= 0.5) {
+            var result = {
+                x: distance,
+                y: distance
+            };
+            return result;
+        }
+        if (getSouthWestFuzzy(angle) >= 0.5) {
+            var result = {
+                x: -distance,
+                y: distance
+            };
+            return result;
+        }
+        if (getNorthFuzzy(angle) >= 0.5) {
+            var result = {
+                x: 0,
+                y: -distance
+            };
+            return result;
+        }
+        if (getSouthFuzzy(angle) >= 0.5) {
+            var result = {
+                x: 0,
+                y: distance
+            };
+            return result;
+        }
+        if (getEastFuzzy(angle) >= 0.5) {
+            var result = {
+                x: distance,
+                y: 0
+            };
+            return result;
+        }
+        if (getWestFuzzy(angle) >= 0.5) {
+            var result = {
+                x: -distance,
+                y: 0
+            };
+            return result;
+        }
+    }
+    FuzzyHelperLib.getPositionOffset = getPositionOffset;
 })(FuzzyHelperLib || (FuzzyHelperLib = {}));
 
 var MiscCalculator;
@@ -218,6 +270,7 @@ var CanvasHelper;
 })(CanvasHelper || (CanvasHelper = {}));
 
 function findBall(robotPosition, ballPosition) {
+    var angleToBall = MiscCalculator.getAngleToBall(ballPosition, robotPosition);
 }
 
 function shootBall(ballPosition) {

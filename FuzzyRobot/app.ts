@@ -69,7 +69,7 @@ module FuzzyHelperLib {
                 return 0;
     }
 
-    export function getEastFuzzy(angle: number): number {
+    function getEastFuzzy(angle: number): number {
         var AscInfLimit: number = 315;
         var AscSupLimit: number = 360;
         var DescInfLimit: number = 0;
@@ -78,7 +78,7 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getNorthEastFuzzy(angle: number): number {
+    function getNorthEastFuzzy(angle: number): number {
         var AscInfLimit: number = 0;
         var AscSupLimit: number = 45;
         var DescInfLimit: number = 45;
@@ -87,7 +87,7 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getNorthFuzzy(angle: number): number {
+    function getNorthFuzzy(angle: number): number {
         var AscInfLimit: number = 45;
         var AscSupLimit: number = 90;
         var DescInfLimit: number = 90;
@@ -97,7 +97,7 @@ module FuzzyHelperLib {
 
     }
 
-    export function getNorthWestFuzzy(angle: number): number {
+    function getNorthWestFuzzy(angle: number): number {
         var AscInfLimit: number = 90;
         var AscSupLimit: number = 135;
         var DescInfLimit: number = 135;
@@ -106,7 +106,7 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getWestFuzzy(angle: number): number {
+    function getWestFuzzy(angle: number): number {
         var AscInfLimit: number = 135;
         var AscSupLimit: number = 180;
         var DescInfLimit: number = 180;
@@ -115,7 +115,7 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getSouthWestFuzzy(angle: number): number {
+    function getSouthWestFuzzy(angle: number): number {
         var AscInfLimit: number = 180;
         var AscSupLimit: number = 225;
         var DescInfLimit: number = 225;
@@ -124,7 +124,7 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getSouthFuzzy(angle: number): number {
+    function getSouthFuzzy(angle: number): number {
         var AscInfLimit: number = 225;
         var AscSupLimit: number = 270;
         var DescInfLimit: number = 270;
@@ -133,13 +133,72 @@ module FuzzyHelperLib {
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
-    export function getSouthEastFuzzy(angle: number): number {
+    function getSouthEastFuzzy(angle: number): number {
         var AscInfLimit: number = 270;
         var AscSupLimit: number = 315;
         var DescInfLimit: number = 315;
         var DescSupLimit: number = 360;
 
         return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+    }
+
+    export function getPositionOffset(angle: number, distance: number): Point {
+        if (getNorthEastFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: distance,
+                y: -distance
+            }
+            return result;
+        }
+        if (getNorthWestFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: -distance,
+                y: -distance
+            }
+            return result;
+        }
+        if (getSouthEastFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: distance,
+                y: distance
+            }
+            return result;
+        }
+        if (getSouthWestFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: -distance,
+                y: distance
+            }
+            return result;
+        }
+        if (getNorthFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: 0,
+                y: -distance
+            }
+            return result;
+        }
+        if (getSouthFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: 0,
+                y: distance
+            }
+            return result;
+        }
+        if (getEastFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: distance,
+                y: 0
+            }
+            return result;
+        }
+        if (getWestFuzzy(angle) >= 0.5) {
+            var result: Point = {
+                x: -distance,
+                y: 0
+            }
+            return result;
+        }
     }
 
 }
@@ -228,7 +287,9 @@ module CanvasHelper {
 }
 
 function findBall(robotPosition: Point, ballPosition: Point)
-{ }
+{
+    var angleToBall: number = MiscCalculator.getAngleToBall(ballPosition, robotPosition);
+}
 
 function shootBall(ballPosition: Point)
 { }
