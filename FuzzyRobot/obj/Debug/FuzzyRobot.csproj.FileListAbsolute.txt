@@ -1,0 +1,6 @@
+c:\users\paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\bin\FuzzyRobot.dll.config
+c:\users\paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\bin\FuzzyRobot.dll
+c:\users\paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\bin\FuzzyRobot.pdb
+c:\users\paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\obj\Debug\FuzzyRobot.dll
+c:\users\paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\obj\Debug\FuzzyRobot.pdb
+C:\Users\Paulo\documents\visual studio 2013\Projects\FuzzyRobot\FuzzyRobot\obj\Debug\FuzzyRobot.csprojResolveAssemblyReference.cache

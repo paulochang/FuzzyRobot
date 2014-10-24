@@ -1,0 +1,86 @@
+﻿function getAscendingHeight(li, ls, x) {
+    return (x - li) / (ls - li);
+}
+
+function getDescendingHeight(li, ls, x) {
+    return (ls - x) / (ls - li);
+}
+
+function getNorthFuzzy(angle) {
+    var l1 = 225;
+    var l2 = 270;
+    var l3 = 315;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getNorthEastFuzzy(angle) {
+    var l1 = 270;
+    var l2 = 315;
+    var l3 = 360;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getEastFuzzy(angle) {
+    var l1 = 315;
+    var l2 = 360;
+    var l3 = 45;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getSouthEastFuzzy(angle) {
+    var l1 = 0;
+    var l2 = 45;
+    var l3 = 90;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getSouthFuzzy(angle) {
+    var l1 = 45;
+    var l2 = 90;
+    var l3 = 135;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getSouthWestFuzzy(angle) {
+    var l1 = 90;
+    var l2 = 135;
+    var l3 = 180;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getWestFuzzy(angle) {
+    var l1 = 135;
+    var l2 = 180;
+    var l3 = 225;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getNorthWestFuzzy(angle) {
+    var l1 = 180;
+    var l2 = 225;
+    var l3 = 270;
+
+    return this.getFuzzyValue(l1, l2, l3, angle);
+}
+
+function getFuzzyValue(l1, l2, l3, angle) {
+    if ((angle >= l1) && (angle <= l2))
+        return this.getAscendingHeight(l1, l2, angle);
+    else if (l2 != 360)
+        if ((angle >= l2) && (angle <= l3))
+            return this.getDescendingHeight(l2, l3, angle);
+        else
+            return 0;
+    else if ((angle >= 0) && (angle <= l3))
+        return this.getDescendingHeight(l2, l3, angle);
+    else
+        return 0;
+}
+//# sourceMappingURL=app.js.map

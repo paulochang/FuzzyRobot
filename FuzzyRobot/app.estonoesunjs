@@ -1,0 +1,86 @@
+﻿var DirectionManager = (function () {
+    function DirectionManager() {
+    }
+    DirectionManager.prototype.getAscendingHeight = function (li, ls, x) {
+        return (x - li) / (ls - li);
+    };
+
+    DirectionManager.prototype.getDescendingHeight = function (li, ls, x) {
+        return (ls - x) / (ls - li);
+    };
+
+    DirectionManager.prototype.getNorthFuzzy = function (angle) {
+        var l1 = 225;
+        var l2 = 270;
+        var l3 = 315;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getNorthEastFuzzy = function (angle) {
+        var l1 = 270;
+        var l2 = 315;
+        var l3 = 360;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getEastFuzzy = function (angle) {
+        var l1 = 315;
+        var l2 = 360;
+        var l3 = 45;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getSouthEastFuzzy = function (angle) {
+        var l1 = 0;
+        var l2 = 45;
+        var l3 = 90;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getSouthFuzzy = function (angle) {
+        var l1 = 45;
+        var l2 = 90;
+        var l3 = 135;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getSouthWestFuzzy = function (angle) {
+        var l1 = 90;
+        var l2 = 135;
+        var l3 = 180;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getWestFuzzy = function (angle) {
+        var l1 = 135;
+        var l2 = 180;
+        var l3 = 225;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getNorthWestFuzzy = function (angle) {
+        var l1 = 180;
+        var l2 = 225;
+        var l3 = 270;
+
+        return this.getFuzzyValue(l1, l2, l3, angle);
+    };
+
+    DirectionManager.prototype.getFuzzyValue = function (l1, l2, l3, angle) {
+        if ((angle >= l1) && (angle <= l2))
+            return this.getAscendingHeight(l1, l2, angle);
+        else if ((angle >= l2) && (angle <= l3))
+            return this.getDescendingHeight(l2, l3, angle);
+        else
+            return 0;
+    };
+    return DirectionManager;
+})();
+//# sourceMappingURL=app.js.map
