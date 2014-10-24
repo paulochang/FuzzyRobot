@@ -1,5 +1,5 @@
 ﻿var canvasSurface: HTMLCanvasElement;
-var canvasContext : CanvasRenderingContext2D;
+var canvasContext: CanvasRenderingContext2D;
 
 //function CalculateAngle() {
 //    var ballXinput: HTMLInputElement =
@@ -61,10 +61,10 @@ module FuzzyHelperLib {
 
     function getFuzzyValue(AscInfLimit: number, AscSupLimit: number, DescInfLimit: number, DescSupLimit: number, angle: number): number {
         if ((angle >= AscInfLimit) && (angle <= AscSupLimit))
-            return this.getAscendingHeight(AscInfLimit, AscSupLimit, angle);
+            return getAscendingHeight(AscInfLimit, AscSupLimit, angle);
         else
             if ((angle >= DescInfLimit) && (angle <= DescSupLimit))
-                return this.getDescendingHeight(DescInfLimit, DescSupLimit, angle);
+                return getDescendingHeight(DescInfLimit, DescSupLimit, angle);
             else
                 return 0;
     }
@@ -75,7 +75,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 0;
         var DescSupLimit: number = 45;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getNorthEastFuzzy(angle: number): number {
@@ -84,7 +84,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 45;
         var DescSupLimit: number = 90;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getNorthFuzzy(angle: number): number {
@@ -93,7 +93,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 90;
         var DescSupLimit: number = 135
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
 
     }
 
@@ -103,7 +103,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 135;
         var DescSupLimit: number = 180;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getWestFuzzy(angle: number): number {
@@ -112,7 +112,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 180;
         var DescSupLimit: number = 225;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthWestFuzzy(angle: number): number {
@@ -121,7 +121,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 225;
         var DescSupLimit: number = 270;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthFuzzy(angle: number): number {
@@ -130,7 +130,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 270;
         var DescSupLimit: number = 315;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthEastFuzzy(angle: number): number {
@@ -139,7 +139,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 315;
         var DescSupLimit: number = 360;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     export function getPositionOffset(angle: number, distance: number): Point {
@@ -204,9 +204,9 @@ module FuzzyHelperLib {
 }
 
 module MiscCalculator {
-    export function getAngleToBall(BallPos: Point, RobotPos: Point) {
-        var DeltaX: number = BallPos.x - RobotPos.x;
-        var DeltaY: number = RobotPos.y - BallPos.y;
+    export function getAngleBetweenPoints(PointA: Point, PointB: Point) {
+        var DeltaX: number = PointA.x - PointB.x;
+        var DeltaY: number = PointB.y - PointA.y;
 
         var theta: number = Math.atan2(DeltaY, DeltaX);
 
@@ -222,6 +222,34 @@ module MiscCalculator {
         };
 
         return result;
+    }
+
+    export function addPoints(PointA: Point, PointB: Point): Point {
+        var result: Point = {
+            x: PointA.x + PointB.x,
+            y: PointA.y + PointB.y
+        }
+
+        return result;
+    }
+
+    export function getDistanceBetweenPoints(PointA: Point, PointB: Point): number {
+
+        var XDifference = PointA.x - PointB.x;
+        var YDifference = PointA.y - PointB.y;
+
+        var squaredXDifference = XDifference * XDifference;
+        var squaredYDifference = YDifference * YDifference;
+        return Math.sqrt(squaredXDifference + squaredYDifference);
+    }
+
+    export function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
     }
 }
 
@@ -254,15 +282,14 @@ module CanvasHelper {
             );
     }
 
-    export function positionRobot(): Point {
-        var robotPosition: Point;
-
-        robotPosition = MiscCalculator.generateRandomPoint(
-            GameConstants.ROBOT_RANGE,
-            GameConstants.ROBOT_RANGE,
-            canvasSurface.width,
-            canvasSurface.height
-            );
+    export function positionRobot(robotPosition?: Point): Point {
+        if (!robotPosition)
+            robotPosition = MiscCalculator.generateRandomPoint(
+                GameConstants.ROBOT_RANGE,
+                GameConstants.ROBOT_RANGE,
+                canvasSurface.width,
+                canvasSurface.height
+                );
 
         drawCircle(robotPosition, GameConstants.ROBOT_RANGE, '#aaa');
         drawCircle(robotPosition, GameConstants.ROBOT_RADIO, '#111');
@@ -270,15 +297,15 @@ module CanvasHelper {
         return robotPosition;
     }
 
-    export function positionBall(): Point {
-        var ballPosition: Point;
+    export function positionBall(ballPosition?: Point): Point {
 
-        ballPosition = MiscCalculator.generateRandomPoint(
-            GameConstants.BALL_RADIO,
-            GameConstants.BALL_RADIO,
-            canvasSurface.width,
-            canvasSurface.height
-            );
+        if (!ballPosition)
+            ballPosition = MiscCalculator.generateRandomPoint(
+                GameConstants.BALL_RADIO,
+                GameConstants.BALL_RADIO,
+                canvasSurface.width,
+                canvasSurface.height
+                );
 
         drawCircle(ballPosition, GameConstants.BALL_RADIO, 'white');
 
@@ -286,22 +313,55 @@ module CanvasHelper {
     }
 }
 
-function findBall(robotPosition: Point, ballPosition: Point)
-{
-    var angleToBall: number = MiscCalculator.getAngleToBall(ballPosition, robotPosition);
+var requestAnimFrame: (callback: () => void) => void = (function () {
+    return window.requestAnimationFrame ||
+        (<any>window).webkitRequestAnimationFrame ||
+        (<any>window).mozRequestAnimationFrame ||
+        (<any>window).oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (callback) {
+            window.setTimeout(callback, 1000 / 60, new Date().getTime());
+        };
+})(); 
+
+function findBall(robotPosition: Point, ballPosition: Point) {
+
+    var RobotIsOverBall: boolean;
+
+    RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+
+    if (!RobotIsOverBall) {
+        var angleToBall: number = MiscCalculator.getAngleBetweenPoints(ballPosition, robotPosition);
+
+        var robotOffset: Point = FuzzyHelperLib.getPositionOffset(angleToBall, 5);
+        //confirm('Estoy en ' + robotPosition.x + ' ' + robotPosition.y + ' me muevo a ' + MiscCalculator.addPoints(robotPosition, robotOffset).x + MiscCalculator.addPoints(robotPosition, robotOffset).y);
+
+        robotPosition = MiscCalculator.addPoints(robotPosition, robotOffset);
+        CanvasHelper.clearBoard();
+        CanvasHelper.positionBall(ballPosition);
+        CanvasHelper.positionRobot(robotPosition);
+
+        requestAnimFrame(function () {
+            findBall(robotPosition, ballPosition);
+        });
+        
+        RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+    }
 }
 
 function shootBall(ballPosition: Point)
 { }
 
-function evaluate(ballPosition: Point): boolean
-{
+function evaluate(ballPosition: Point): boolean {
     return true;
 }
 
 function play(robotPosition: point, ballPosition: point) {
     var alreadyWon: boolean = false;
+
+
     while (!alreadyWon) {
+
         findBall(robotPosition, ballPosition);
         shootBall(ballPosition);
         alreadyWon = evaluate(ballPosition);
@@ -312,9 +372,12 @@ function play(robotPosition: point, ballPosition: point) {
 function initialize() {
     canvasSurface = <HTMLCanvasElement> document.getElementById("myCanvas");
     canvasContext = canvasSurface.getContext("2d");
+
     CanvasHelper.clearBoard();
     var ballPosition = CanvasHelper.positionBall();
     var robotPosition = CanvasHelper.positionRobot();
+
+    play(robotPosition, ballPosition);
 }
 
 document.addEventListener("DOMContentLoaded", initialize, false)

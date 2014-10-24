@@ -55,9 +55,9 @@ var FuzzyHelperLib;
 
     function getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle) {
         if ((angle >= AscInfLimit) && (angle <= AscSupLimit))
-            return this.getAscendingHeight(AscInfLimit, AscSupLimit, angle);
+            return getAscendingHeight(AscInfLimit, AscSupLimit, angle);
         else if ((angle >= DescInfLimit) && (angle <= DescSupLimit))
-            return this.getDescendingHeight(DescInfLimit, DescSupLimit, angle);
+            return getDescendingHeight(DescInfLimit, DescSupLimit, angle);
         else
             return 0;
     }
@@ -68,7 +68,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 0;
         var DescSupLimit = 45;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getNorthEastFuzzy(angle) {
@@ -77,7 +77,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 45;
         var DescSupLimit = 90;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getNorthFuzzy(angle) {
@@ -86,7 +86,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 90;
         var DescSupLimit = 135;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getNorthWestFuzzy(angle) {
@@ -95,7 +95,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 135;
         var DescSupLimit = 180;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getWestFuzzy(angle) {
@@ -104,7 +104,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 180;
         var DescSupLimit = 225;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthWestFuzzy(angle) {
@@ -113,7 +113,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 225;
         var DescSupLimit = 270;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthFuzzy(angle) {
@@ -122,7 +122,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 270;
         var DescSupLimit = 315;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getSouthEastFuzzy(angle) {
@@ -131,7 +131,7 @@ var FuzzyHelperLib;
         var DescInfLimit = 315;
         var DescSupLimit = 360;
 
-        return this.getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
     }
 
     function getPositionOffset(angle, distance) {
@@ -197,9 +197,9 @@ var FuzzyHelperLib;
 
 var MiscCalculator;
 (function (MiscCalculator) {
-    function getAngleToBall(BallPos, RobotPos) {
-        var DeltaX = BallPos.x - RobotPos.x;
-        var DeltaY = RobotPos.y - BallPos.y;
+    function getAngleBetweenPoints(PointA, PointB) {
+        var DeltaX = PointA.x - PointB.x;
+        var DeltaY = PointB.y - PointA.y;
 
         var theta = Math.atan2(DeltaY, DeltaX);
 
@@ -207,7 +207,7 @@ var MiscCalculator;
 
         return theta * (180 / Math.PI);
     }
-    MiscCalculator.getAngleToBall = getAngleToBall;
+    MiscCalculator.getAngleBetweenPoints = getAngleBetweenPoints;
 
     function generateRandomPoint(xOffset, yOffset, xLimit, yLimit) {
         var result = {
@@ -218,6 +218,36 @@ var MiscCalculator;
         return result;
     }
     MiscCalculator.generateRandomPoint = generateRandomPoint;
+
+    function addPoints(PointA, PointB) {
+        var result = {
+            x: PointA.x + PointB.x,
+            y: PointA.y + PointB.y
+        };
+
+        return result;
+    }
+    MiscCalculator.addPoints = addPoints;
+
+    function getDistanceBetweenPoints(PointA, PointB) {
+        var XDifference = PointA.x - PointB.x;
+        var YDifference = PointA.y - PointB.y;
+
+        var squaredXDifference = XDifference * XDifference;
+        var squaredYDifference = YDifference * YDifference;
+        return Math.sqrt(squaredXDifference + squaredYDifference);
+    }
+    MiscCalculator.getDistanceBetweenPoints = getDistanceBetweenPoints;
+
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
+    }
+    MiscCalculator.sleep = sleep;
 })(MiscCalculator || (MiscCalculator = {}));
 
 var CanvasHelper;
@@ -245,10 +275,9 @@ var CanvasHelper;
     }
     CanvasHelper.clearBoard = clearBoard;
 
-    function positionRobot() {
-        var robotPosition;
-
-        robotPosition = MiscCalculator.generateRandomPoint(GameConstants.ROBOT_RANGE, GameConstants.ROBOT_RANGE, canvasSurface.width, canvasSurface.height);
+    function positionRobot(robotPosition) {
+        if (!robotPosition)
+            robotPosition = MiscCalculator.generateRandomPoint(GameConstants.ROBOT_RANGE, GameConstants.ROBOT_RANGE, canvasSurface.width, canvasSurface.height);
 
         drawCircle(robotPosition, GameConstants.ROBOT_RANGE, '#aaa');
         drawCircle(robotPosition, GameConstants.ROBOT_RADIO, '#111');
@@ -257,10 +286,9 @@ var CanvasHelper;
     }
     CanvasHelper.positionRobot = positionRobot;
 
-    function positionBall() {
-        var ballPosition;
-
-        ballPosition = MiscCalculator.generateRandomPoint(GameConstants.BALL_RADIO, GameConstants.BALL_RADIO, canvasSurface.width, canvasSurface.height);
+    function positionBall(ballPosition) {
+        if (!ballPosition)
+            ballPosition = MiscCalculator.generateRandomPoint(GameConstants.BALL_RADIO, GameConstants.BALL_RADIO, canvasSurface.width, canvasSurface.height);
 
         drawCircle(ballPosition, GameConstants.BALL_RADIO, 'white');
 
@@ -269,8 +297,34 @@ var CanvasHelper;
     CanvasHelper.positionBall = positionBall;
 })(CanvasHelper || (CanvasHelper = {}));
 
+var requestAnimFrame = (function () {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        window.setTimeout(callback, 1000 / 60, new Date().getTime());
+    };
+})();
+
 function findBall(robotPosition, ballPosition) {
-    var angleToBall = MiscCalculator.getAngleToBall(ballPosition, robotPosition);
+    var RobotIsOverBall;
+
+    RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+
+    if (!RobotIsOverBall) {
+        var angleToBall = MiscCalculator.getAngleBetweenPoints(ballPosition, robotPosition);
+
+        var robotOffset = FuzzyHelperLib.getPositionOffset(angleToBall, 5);
+
+        //confirm('Estoy en ' + robotPosition.x + ' ' + robotPosition.y + ' me muevo a ' + MiscCalculator.addPoints(robotPosition, robotOffset).x + MiscCalculator.addPoints(robotPosition, robotOffset).y);
+        robotPosition = MiscCalculator.addPoints(robotPosition, robotOffset);
+        CanvasHelper.clearBoard();
+        CanvasHelper.positionBall(ballPosition);
+        CanvasHelper.positionRobot(robotPosition);
+
+        requestAnimFrame(function () {
+            findBall(robotPosition, ballPosition);
+        });
+
+        RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+    }
 }
 
 function shootBall(ballPosition) {
@@ -282,6 +336,7 @@ function evaluate(ballPosition) {
 
 function play(robotPosition, ballPosition) {
     var alreadyWon = false;
+
     while (!alreadyWon) {
         findBall(robotPosition, ballPosition);
         shootBall(ballPosition);
@@ -292,9 +347,12 @@ function play(robotPosition, ballPosition) {
 function initialize() {
     canvasSurface = document.getElementById("myCanvas");
     canvasContext = canvasSurface.getContext("2d");
+
     CanvasHelper.clearBoard();
     var ballPosition = CanvasHelper.positionBall();
     var robotPosition = CanvasHelper.positionRobot();
+
+    play(robotPosition, ballPosition);
 }
 
 document.addEventListener("DOMContentLoaded", initialize, false);
