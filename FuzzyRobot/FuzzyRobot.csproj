@@ -19,16 +19,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
-    <Content Include="canvasedPage.html" />
-    <Content Include="game.js" />
     <Content Include="index.html" />
-    <Content Include="robot.html" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
-    <TypeScriptCompile Include="main.ts" />
-    <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">

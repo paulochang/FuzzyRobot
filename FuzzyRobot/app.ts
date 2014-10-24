@@ -1,38 +1,7 @@
 ﻿var canvasSurface: HTMLCanvasElement;
 var canvasContext: CanvasRenderingContext2D;
 
-//function CalculateAngle() {
-//    var ballXinput: HTMLInputElement =
-//        <HTMLInputElement>document.getElementById('ballXInput');
-//    var ballYinput: HTMLInputElement =
-//        <HTMLInputElement>document.getElementById('ballYInput');
-
-//    var robotXinput: HTMLInputElement =
-//        <HTMLInputElement>document.getElementById('robotXInput');
-//    var robotYinput: HTMLInputElement =
-//        <HTMLInputElement>document.getElementById('robotYInput');
-
-//    var ballXcoord: number = parseFloat(ballXinput.value);
-//    var ballYcoord: number = parseFloat(ballYinput.value);
-//    var robotXcoord: number = parseFloat(robotXinput.value);
-//    var robotYcoord: number = parseFloat(robotYinput.value);
-
-//    var angleLable: HTMLLabelElement = <HTMLLabelElement>document.getElementById('AngleLbl');
-//    angleLable.textContent = getAngleToBall(ballXcoord, ballYcoord, robotXcoord, robotYcoord).toString();
-//}
-
-//function printAngle(angle: number) {
-//    console.clear();
-//    console.log(" N " + FuzzyHelperLib.getNorthFuzzy(angle));
-//    console.log(" NE " + FuzzyHelperLib.getNorthEastFuzzy(angle));
-//    console.log(" E " + FuzzyHelperLib.getEastFuzzy(angle));
-//    console.log(" SE " + FuzzyHelperLib.getSouthEastFuzzy(angle));
-//    console.log(" S " + FuzzyHelperLib.getSouthFuzzy(angle));
-//    console.log(" SW " + FuzzyHelperLib.getSouthWestFuzzy(angle));
-//    console.log(" W " + FuzzyHelperLib.getWestFuzzy(angle));
-//    console.log(" NW " + FuzzyHelperLib.getNorthWestFuzzy(angle));
-//}
-
+var alreadyWon: boolean = false;
 /**
  * Represents a point object
  **/
@@ -47,17 +16,18 @@ class GameConstants {
     public static get ROBOT_RANGE(): number { return 15; }
     public static get GOAL_WIDTH(): number { return 10; }
     public static get GOAL_HEIGHT(): number { return 100; }
+    public static get STEP_SIZE(): number { return 5; }
 }
 
 module FuzzyHelperLib {
 
     function getAscendingHeight(li: number, ls: number, x: number): number {
-        return (x - li) / (ls - li)
-    }
+		return (x - li) / (ls - li)
+	}
 
     function getDescendingHeight(li: number, ls: number, x: number): number {
-        return 1 - (x - li) / (ls - li)
-    }
+		return 1 - (x - li) / (ls - li)
+	}
 
     function getFuzzyValue(AscInfLimit: number, AscSupLimit: number, DescInfLimit: number, DescSupLimit: number, angle: number): number {
         if ((angle >= AscInfLimit) && (angle <= AscSupLimit))
@@ -93,7 +63,7 @@ module FuzzyHelperLib {
         var DescInfLimit: number = 90;
         var DescSupLimit: number = 135
 
-        return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
+		return getFuzzyValue(AscInfLimit, AscSupLimit, DescInfLimit, DescSupLimit, angle);
 
     }
 
@@ -148,62 +118,62 @@ module FuzzyHelperLib {
                 x: distance,
                 y: -distance
             }
-            return result;
+			return result;
         }
         if (getNorthWestFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: -distance,
                 y: -distance
             }
-            return result;
+			return result;
         }
         if (getSouthEastFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: distance,
                 y: distance
             }
-            return result;
+			return result;
         }
         if (getSouthWestFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: -distance,
                 y: distance
             }
-            return result;
+			return result;
         }
         if (getNorthFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: 0,
                 y: -distance
             }
-            return result;
+			return result;
         }
         if (getSouthFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: 0,
                 y: distance
             }
-            return result;
+			return result;
         }
         if (getEastFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: distance,
                 y: 0
             }
-            return result;
+			return result;
         }
         if (getWestFuzzy(angle) >= 0.5) {
             var result: Point = {
                 x: -distance,
                 y: 0
             }
-            return result;
+			return result;
         }
     }
 
 }
 
-module MiscCalculator {
+module PointUtilites {
     export function getAngleBetweenPoints(PointA: Point, PointB: Point) {
         var DeltaX: number = PointA.x - PointB.x;
         var DeltaY: number = PointB.y - PointA.y;
@@ -230,7 +200,7 @@ module MiscCalculator {
             y: PointA.y + PointB.y
         }
 
-        return result;
+		return result;
     }
 
     export function getDistanceBetweenPoints(PointA: Point, PointB: Point): number {
@@ -243,13 +213,20 @@ module MiscCalculator {
         return Math.sqrt(squaredXDifference + squaredYDifference);
     }
 
-    export function sleep(milliseconds) {
-        var start = new Date().getTime();
-        for (var i = 0; i < 1e7; i++) {
-            if ((new Date().getTime() - start) > milliseconds) {
-                break;
-            }
-        }
+
+    export function distanceToBorder(thePoint: Point): number {
+        var distanceToTop = thePoint.y;
+        var distanceToBottom = canvasSurface.height - thePoint.y;
+        var distanceToLeft = thePoint.x;
+        var distanceToRight = canvasSurface.width - thePoint.x;
+
+        return Math.min(distanceToTop, distanceToBottom, distanceToLeft, distanceToRight);
+    }
+
+    export function isInCollidingRegion(pointToEvaluate: Point, radius: number, inferiorPoint: Point, superiorPoint: Point): boolean {
+        var xCoincidente: boolean = (pointToEvaluate.x + radius >= inferiorPoint.x) && (pointToEvaluate.x - radius <= superiorPoint.x);
+        var yCoincidente: boolean = (pointToEvaluate.y + radius >= inferiorPoint.y) && (pointToEvaluate.x - radius <= superiorPoint.y);
+        return xCoincidente && yCoincidente;
     }
 }
 
@@ -276,7 +253,7 @@ module CanvasHelper {
         canvasContext.fillStyle = "#f00";
         canvasContext.fillRect(
             (canvasSurface.width - GameConstants.GOAL_WIDTH),
-            (canvasSurface.height / 2) - (GameConstants.GOAL_HEIGHT / 2),
+            (canvasSurface.height - GameConstants.GOAL_HEIGHT) / 2,
             GameConstants.GOAL_WIDTH,
             GameConstants.GOAL_HEIGHT
             );
@@ -284,7 +261,7 @@ module CanvasHelper {
 
     export function positionRobot(robotPosition?: Point): Point {
         if (!robotPosition)
-            robotPosition = MiscCalculator.generateRandomPoint(
+            robotPosition = PointUtilites.generateRandomPoint(
                 GameConstants.ROBOT_RANGE,
                 GameConstants.ROBOT_RANGE,
                 canvasSurface.width,
@@ -300,7 +277,7 @@ module CanvasHelper {
     export function positionBall(ballPosition?: Point): Point {
 
         if (!ballPosition)
-            ballPosition = MiscCalculator.generateRandomPoint(
+            ballPosition = PointUtilites.generateRandomPoint(
                 GameConstants.BALL_RADIO,
                 GameConstants.BALL_RADIO,
                 canvasSurface.width,
@@ -313,6 +290,35 @@ module CanvasHelper {
     }
 }
 
+module ProbabilityUtilies {
+    export function rnd(mean: number, stdev: number): number {
+        return Math.round(rnd_bmt() * stdev + mean);
+    }
+
+
+    /**
+     * Source http://www.protonfish.com/jslib/boxmuller.shtml
+     */
+    function rnd_bmt(): number {
+        var x = 0, y = 0, rds, c;
+
+	// Get two random numbers from -1 to 1.
+	// If the radius is zero or greater than 1, throw them out and pick two new ones
+	// Rejection sampling throws away about 20% of the pairs.
+	do {
+            x = Math.random() * 2 - 1;
+            y = Math.random() * 2 - 1;
+            rds = x * x + y * y;
+        }
+	while (rds == 0 || rds > 1)
+
+	// This magic is the Box-Muller Transform
+	c = Math.sqrt(-2 * Math.log(rds) / rds);
+
+        return x * c;
+    }
+}
+
 var requestAnimFrame: (callback: () => void) => void = (function () {
     return window.requestAnimationFrame ||
         (<any>window).webkitRequestAnimationFrame ||
@@ -322,21 +328,19 @@ var requestAnimFrame: (callback: () => void) => void = (function () {
         function (callback) {
             window.setTimeout(callback, 1000 / 60, new Date().getTime());
         };
-})(); 
+})();
 
 function findBall(robotPosition: Point, ballPosition: Point) {
-
     var RobotIsOverBall: boolean;
 
-    RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+    RobotIsOverBall = (PointUtilites.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
 
     if (!RobotIsOverBall) {
-        var angleToBall: number = MiscCalculator.getAngleBetweenPoints(ballPosition, robotPosition);
+        var angleToBall: number = PointUtilites.getAngleBetweenPoints(ballPosition, robotPosition);
 
-        var robotOffset: Point = FuzzyHelperLib.getPositionOffset(angleToBall, 5);
-        //confirm('Estoy en ' + robotPosition.x + ' ' + robotPosition.y + ' me muevo a ' + MiscCalculator.addPoints(robotPosition, robotOffset).x + MiscCalculator.addPoints(robotPosition, robotOffset).y);
+        var robotOffset: Point = FuzzyHelperLib.getPositionOffset(angleToBall, GameConstants.STEP_SIZE);
 
-        robotPosition = MiscCalculator.addPoints(robotPosition, robotOffset);
+        robotPosition = PointUtilites.addPoints(robotPosition, robotOffset);
         CanvasHelper.clearBoard();
         CanvasHelper.positionBall(ballPosition);
         CanvasHelper.positionRobot(robotPosition);
@@ -344,28 +348,93 @@ function findBall(robotPosition: Point, ballPosition: Point) {
         requestAnimFrame(function () {
             findBall(robotPosition, ballPosition);
         });
-        
-        RobotIsOverBall = (MiscCalculator.getDistanceBetweenPoints(robotPosition, ballPosition) < GameConstants.ROBOT_RANGE);
+    }
+    else {
+        requestAnimFrame(function () {
+            shootBall(ballPosition, robotPosition);
+        });
     }
 }
 
-function shootBall(ballPosition: Point)
-{ }
 
-function evaluate(ballPosition: Point): boolean {
-    return true;
+
+function moveBall(ballPosition: Point, finalPosition: Point, robotPosition: Point, isFirstShot: boolean) {
+
+    var ballIsInPosition: boolean;
+
+    ballIsInPosition = (PointUtilites.getDistanceBetweenPoints(ballPosition, finalPosition) < GameConstants.BALL_RADIO);
+    ballIsInPosition = ballIsInPosition || (PointUtilites.distanceToBorder(ballPosition) < GameConstants.BALL_RADIO * 1.5);
+    ballIsInPosition = ballIsInPosition && !isFirstShot;
+
+
+    if (!ballIsInPosition) {
+        var angleToFinal: number = PointUtilites.getAngleBetweenPoints(ballPosition, finalPosition);
+
+        var ballOffset: Point = FuzzyHelperLib.getPositionOffset(angleToFinal, GameConstants.STEP_SIZE);
+
+        ballPosition = PointUtilites.addPoints(ballPosition, ballOffset);
+        CanvasHelper.clearBoard();
+        CanvasHelper.positionBall(ballPosition);
+        CanvasHelper.positionRobot(robotPosition);
+
+        requestAnimFrame(function () {
+            moveBall(ballPosition, finalPosition, robotPosition, false);
+        });
+    }
+    else {
+        alreadyWon = evaluate(ballPosition);
+        requestAnimFrame(function () {
+            play(robotPosition, ballPosition);
+        });
+    }
 }
 
-function play(robotPosition: point, ballPosition: point) {
-    var alreadyWon: boolean = false;
+function shootBall(ballPosition: Point, robotPosition: Point) {
+    var goalPosition: Point = {
+
+        x: (canvasSurface.width),
+        y: (canvasSurface.height / 2)
+    }
+
+	var angleToGoal: number = PointUtilites.getAngleBetweenPoints(ballPosition, goalPosition);
+    var distanceToGoal: number = PointUtilites.getDistanceBetweenPoints(ballPosition, goalPosition);
+    var shootingDistance: number = ProbabilityUtilies.rnd(distanceToGoal, distanceToGoal * 0.125);
+    var ballOffset: Point = FuzzyHelperLib.getPositionOffset(angleToGoal, shootingDistance);
+    var finalPosition: Point = PointUtilites.addPoints(ballPosition, ballOffset);
+
+    moveBall(ballPosition, finalPosition, robotPosition, true);
+}
+
+function evaluate(ballPosition: Point): boolean {
+    var goalPosition: Point = {
+        x: (canvasSurface.width),
+        y: (canvasSurface.height / 2)
+    }
 
 
-    while (!alreadyWon) {
+	var distanceToGoal: number = PointUtilites.getDistanceBetweenPoints(ballPosition, goalPosition);
+    var isInGoal = distanceToGoal < GameConstants.BALL_RADIO;
+    var inferiorPoint: Point = {
+        x: canvasSurface.width - GameConstants.GOAL_WIDTH - GameConstants.BALL_RADIO / 2,
+        y: (canvasSurface.height - GameConstants.GOAL_HEIGHT) / 2 - GameConstants.BALL_RADIO / 2
+    };
+    var superiorPoint: Point = {
+        x: canvasSurface.width + GameConstants.BALL_RADIO / 2,
+        y: (canvasSurface.height + GameConstants.GOAL_HEIGHT) / 2 + GameConstants.BALL_RADIO / 2
+    };
+    isInGoal = isInGoal || PointUtilites.isInCollidingRegion(ballPosition, GameConstants.BALL_RADIO, inferiorPoint, superiorPoint);
 
+    return isInGoal;
+}
+
+function play(robotPosition: Point, ballPosition: Point) {
+
+
+    if (!alreadyWon) {
         findBall(robotPosition, ballPosition);
-        shootBall(ballPosition);
-        alreadyWon = evaluate(ballPosition);
-
+    }
+    else {
+        alert('Ganó!!!');
     }
 }
 
